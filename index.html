@@ -696,13 +696,14 @@
     const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
 
-    /* Ножницы перпендикулярны пути — режут линию поперёк */
-    const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
-    const dy = sH - 40;
-    const angle = Math.atan2(dx, dy) * 180 / Math.PI - 90;
+    /* Угол всегда считаем от |dx|, направление — через scaleX */
+    const dx    = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
+    const dy    = sH - 40;
+    const angle = Math.atan2(Math.abs(dx), dy) * 180 / Math.PI - 90;
+    const flipX = dx >= 0 ? 1 : -1;
 
     cutScissors.style.transform =
-      `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
+      `translateX(calc(-50% + ${x}px)) translateY(${y}px) scaleX(${flipX}) rotate(${angle}deg)`;
   }
 
   buildCutPath();
