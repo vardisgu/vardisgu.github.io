@@ -354,6 +354,17 @@
       background: var(--dark);
       border-top: 1px solid rgba(201,169,110,0.14);
       padding: clamp(72px, 12vh, 140px) clamp(24px, 8vw, 110px);
+      position: relative;
+    }
+
+    /* Градиент в низу philosophy: плавный переход к золотой секции */
+    .philosophy::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: clamp(80px, 14vh, 140px);
+      background: linear-gradient(to bottom, transparent, var(--gold));
+      pointer-events: none;
     }
 
     .philosophy__grid {
@@ -443,17 +454,6 @@
       min-height: 480px;
       position: relative;
       overflow: hidden;
-    }
-
-    /* Градиент сверху: плавный переход от тёмной философской секции */
-    .cut-section::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 35%;
-      background: linear-gradient(to bottom, var(--dark), transparent);
-      z-index: 1;
-      pointer-events: none;
     }
 
     .cut__line {
@@ -677,8 +677,9 @@
   function updateCut() {
     const rect = cutSection.getBoundingClientRect();
     const sH = cutSection.offsetHeight;
-    // progress 0→1: когда верх секции достигает верха вьюпорта → пока секция не уходит вверх
-    const progress = Math.max(0, Math.min(1, -rect.top / sH));
+    const vH = window.innerHeight;
+    // 0 = ножницы только появились снизу, 1 = ножницы ушли за верх экрана
+    const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
     cutScissors.style.transform = `translateX(-50%) translateY(${progress * (sH - 40)}px)`;
   }
 
