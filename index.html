@@ -538,30 +538,24 @@
 
     /* ── CUT SECTION: мобильная адаптация ── */
     @media (max-width: 640px) {
-      .cut-section { padding: 44px 12px; }
-      .cut__heading { font-size: 15px; letter-spacing: 0.24em; margin-bottom: 28px; }
+      .cut-section { padding: 40px 10px; }
+      .cut__heading { font-size: 14px; letter-spacing: 0.22em; margin-bottom: 24px; }
 
-      /* Оставляем шахматный порядок, только уже */
       .cut__item {
-        grid-template-columns: 1fr 24px 1fr;
-        padding: 7px 0;
+        grid-template-columns: 1fr 20px 1fr;
+        padding: 10px 0;
       }
       .cut__item:nth-child(odd) .cut__card {
-        padding-right: 8px;
+        padding-right: 10px;
         max-width: none;
       }
       .cut__item:nth-child(even) .cut__card {
-        padding-left: 8px;
+        padding-left: 10px;
         max-width: none;
       }
-      .cut__num    { font-size: 8px;  margin-bottom: 3px; }
-      .cut__ctitle { font-size: 11px; letter-spacing: 0.1em; margin-bottom: 4px; }
-      .cut__cdesc  { font-size: 10px; line-height: 1.55; }
-    }
-
-    @media (max-width: 380px) {
-      /* На совсем маленьких экранах прячем описания чтобы не было каши */
-      .cut__cdesc { display: none; }
+      .cut__num    { font-size: 9px;  letter-spacing: 0.22em; margin-bottom: 4px; }
+      .cut__ctitle { font-size: 12px; letter-spacing: 0.08em; margin-bottom: 5px; }
+      .cut__cdesc  { font-size: 10px; line-height: 1.6; }
     }
 
     /* ── PHILOSOPHY: стопка (планшет) ── */
@@ -843,49 +837,47 @@
   const CUT_AMP  = 52;
   const cutItems = cutBody.querySelectorAll('.cut__item');
 
-  function itemCenters() {
-    const first = cutItems[0];
-    const last  = cutItems[cutItems.length - 1];
-    return {
-      y0: first.offsetTop + first.offsetHeight / 2,
-      y1: last.offsetTop  + last.offsetHeight  / 2
-    };
-  }
+  /* Кешированные значения — пересчитываются только при resize/load,
+     не читаются из DOM на каждый кадр прокрутки (иначе — reflow и дёргание) */
+  let _cutY0 = 0, _cutY1 = 0, _cutSH = 0;
 
   function buildCutPath() {
     const sW = cutBody.offsetWidth;
-    if (!sW) return;
-    const { y0, y1 } = itemCenters();
+    _cutSH   = cutBody.offsetHeight;
+    if (!sW || !_cutSH) return;
+
+    const first = cutItems[0];
+    const last  = cutItems[cutItems.length - 1];
+    _cutY0 = first.offsetTop + first.offsetHeight / 2;
+    _cutY1 = last.offsetTop  + last.offsetHeight  / 2;
+
     const cx = sW / 2;
     let d = '';
     for (let i = 0; i <= 300; i++) {
       const p = i / 300;
       const x = cx + Math.cos(p * CUT_FREQ) * CUT_AMP;
-      const y = y0 + p * (y1 - y0);
+      const y = _cutY0 + p * (_cutY1 - _cutY0);
       d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
     }
     cutPathEl.setAttribute('d', d.trim());
   }
 
   function updateCut() {
-    const rect = cutBody.getBoundingClientRect();
-    const sH   = cutBody.offsetHeight;
+    if (!_cutSH) return;
+    /* getBoundingClientRect — только чтение composite-слоя, не reflow */
+    const top  = cutBody.getBoundingClientRect().top;
     const vH   = window.innerHeight;
-    const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
+    const progress = Math.max(0, Math.min(1, (vH - top) / (vH + _cutSH)));
 
-    const { y0, y1 } = itemCenters();
-    const span = y1 - y0;
-
+    const span    = _cutY1 - _cutY0;
     const x       = Math.cos(progress * CUT_FREQ) * CUT_AMP;
-    const yCenter = y0 + progress * span;
-    const yTop    = yCenter - 20;          /* scissors image is 40px tall */
+    const yTop    = _cutY0 + progress * span - 20;
 
     const dx = -Math.sin(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
-    const dy = span;
-    const finalAngle = Math.atan2(dy, dx) * 180 / Math.PI - 90;
+    const finalAngle = Math.atan2(span, dx) * 180 / Math.PI - 90;
 
     cutScissors.style.transform =
-      `translateX(calc(-50% + ${x}px)) translateY(${yTop}px) rotate(${finalAngle}deg)`;
+      `translate3d(calc(-50% + ${x}px), ${yTop}px, 0) rotate(${finalAngle}deg)`;
   }
 
   buildCutPath();
@@ -907,7 +899,7 @@
       updateCut();
       ticking = false;
     });
-  });
+  }, { passive: true });
 </script>
 
 </body>
