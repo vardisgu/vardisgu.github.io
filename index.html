@@ -442,19 +442,43 @@
     .cut-section {
       background: var(--gold);
       height: max(180vh, 900px);
-      position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Один градиент: чёрный → золото в верху секции */
-    .cut-section::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 70px;
-      background: linear-gradient(to bottom, var(--dark), transparent);
-      z-index: 1;
-      pointer-events: none;
+    /* Заголовок секции */
+    .cut__header {
+      flex-shrink: 0;
+      text-align: center;
+      padding: clamp(52px, 7vh, 80px) 0 clamp(32px, 4vh, 52px);
+      position: relative;
+      z-index: 5;
+    }
+    .cut__title {
+      font-family: 'Cinzel', serif;
+      font-weight: 400;
+      font-size: clamp(18px, 2.2vw, 28px);
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      color: var(--dark);
+    }
+    .cut__title em {
+      font-style: normal;
+      opacity: 0.5;
+    }
+    .cut__title-rule {
+      width: 36px;
+      height: 1px;
+      background: rgba(10,5,0,0.25);
+      margin: 14px auto 0;
+    }
+
+    /* Область ножниц + карточки */
+    .cut__body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
     }
 
     .cut__svg {
@@ -511,7 +535,8 @@
     ══════════════════════════════════════ */
     .cut__stage {
       position: absolute;
-      width: calc(50% - 72px);
+      width: calc(50% - 80px);
+      max-width: 380px;
       transform: translateY(-50%);
       z-index: 4;
       pointer-events: none;
@@ -519,44 +544,43 @@
     .cut__stage--left {
       left: 0;
       text-align: right;
-      padding-right: 52px;
-      padding-left: clamp(16px, 4vw, 52px);
+      padding-right: 60px;
+      padding-left: clamp(24px, 5vw, 60px);
     }
     .cut__stage--right {
       right: 0;
       text-align: left;
-      padding-left: 52px;
-      padding-right: clamp(16px, 4vw, 52px);
+      padding-left: 60px;
+      padding-right: clamp(24px, 5vw, 60px);
     }
     .cut__stage-num {
       display: block;
       font-family: 'Cinzel', serif;
       font-size: 10px;
-      letter-spacing: 0.3em;
-      color: rgba(10,5,0,0.4);
-      margin-bottom: 5px;
+      letter-spacing: 0.32em;
+      color: rgba(10,5,0,0.38);
+      margin-bottom: 7px;
     }
     .cut__stage-title {
       font-family: 'Cinzel', serif;
       font-weight: 400;
-      font-size: clamp(12px, 1.2vw, 16px);
+      font-size: clamp(14px, 1.4vw, 18px);
       color: var(--dark);
       letter-spacing: 0.14em;
-      margin-bottom: 6px;
+      margin-bottom: 9px;
     }
     .cut__stage-desc {
       font-family: 'Raleway', sans-serif;
       font-weight: 300;
-      font-size: clamp(11px, 0.85vw, 13px);
-      color: rgba(10,5,0,0.58);
-      line-height: 1.72;
+      font-size: clamp(12px, 1vw, 14px);
+      color: rgba(10,5,0,0.6);
+      line-height: 1.75;
     }
 
     @media (max-width: 640px) {
-      .cut__stage { width: calc(50% - 36px); }
-      .cut__stage--left  { padding-right: 28px; padding-left: 12px; }
-      .cut__stage--right { padding-left: 28px;  padding-right: 12px; }
-      .cut__stage-desc   { display: none; }
+      .cut__stage { width: calc(50% - 36px); max-width: none; }
+      .cut__stage--left  { padding-right: 28px; padding-left: 14px; }
+      .cut__stage--right { padding-left: 28px;  padding-right: 14px; }
     }
   </style>
 </head>
@@ -658,58 +682,67 @@
 ══════════════════════════════════════ -->
 <section class="cut-section" id="cutSection">
 
-  <div class="cut__stage cut__stage--left"  style="top:6.25%">
-    <span class="cut__stage-num">01</span>
-    <h3 class="cut__stage-title">Заявка</h3>
-    <p class="cut__stage-desc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня.</p>
+  <div class="cut__header">
+    <h2 class="cut__title">Этапы <em>работы</em></h2>
+    <div class="cut__title-rule"></div>
   </div>
 
-  <div class="cut__stage cut__stage--right" style="top:18.75%">
-    <span class="cut__stage-num">02</span>
-    <h3 class="cut__stage-title">Обсуждение</h3>
-    <p class="cut__stage-desc">Обсуждаем пожелания: ткань, фасон, силуэт и все детали будущего изделия.</p>
-  </div>
+  <div class="cut__body" id="cutBody">
 
-  <div class="cut__stage cut__stage--left"  style="top:31.25%">
-    <span class="cut__stage-num">03</span>
-    <h3 class="cut__stage-title">Встреча и материал</h3>
-    <p class="cut__stage-desc">Встречаемся в ателье, выбираем ткани и фурнитуру, утверждаем эскиз.</p>
-  </div>
+    <div class="cut__stage cut__stage--left"  style="top:6.25%">
+      <span class="cut__stage-num">01</span>
+      <h3 class="cut__stage-title">Заявка</h3>
+      <p class="cut__stage-desc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня.</p>
+    </div>
 
-  <div class="cut__stage cut__stage--right" style="top:43.75%">
-    <span class="cut__stage-num">04</span>
-    <h3 class="cut__stage-title">Снятие мерок</h3>
-    <p class="cut__stage-desc">Тщательно снимаем все мерки. Каждый сантиметр важен для идеального кроя.</p>
-  </div>
+    <div class="cut__stage cut__stage--right" style="top:18.75%">
+      <span class="cut__stage-num">02</span>
+      <h3 class="cut__stage-title">Обсуждение</h3>
+      <p class="cut__stage-desc">Обсуждаем пожелания: ткань, фасон, силуэт и все детали будущего изделия.</p>
+    </div>
 
-  <div class="cut__stage cut__stage--left"  style="top:56.25%">
-    <span class="cut__stage-num">05</span>
-    <h3 class="cut__stage-title">Пошив</h3>
-    <p class="cut__stage-desc">Мастер приступает к работе. Срок — от двух до шести недель в зависимости от сложности.</p>
-  </div>
+    <div class="cut__stage cut__stage--left"  style="top:31.25%">
+      <span class="cut__stage-num">03</span>
+      <h3 class="cut__stage-title">Встреча и материал</h3>
+      <p class="cut__stage-desc">Встречаемся в ателье, выбираем ткани и фурнитуру, утверждаем эскиз.</p>
+    </div>
 
-  <div class="cut__stage cut__stage--right" style="top:68.75%">
-    <span class="cut__stage-num">06</span>
-    <h3 class="cut__stage-title">Примерка</h3>
-    <p class="cut__stage-desc">Примеряете изделие и вместе отмечаем всё, что нужно скорректировать под фигуру.</p>
-  </div>
+    <div class="cut__stage cut__stage--right" style="top:43.75%">
+      <span class="cut__stage-num">04</span>
+      <h3 class="cut__stage-title">Снятие мерок</h3>
+      <p class="cut__stage-desc">Тщательно снимаем все мерки. Каждый сантиметр важен для идеального кроя.</p>
+    </div>
 
-  <div class="cut__stage cut__stage--left"  style="top:81.25%">
-    <span class="cut__stage-num">07</span>
-    <h3 class="cut__stage-title">Доработка</h3>
-    <p class="cut__stage-desc">Вносим все правки, добиваемся безупречной посадки и безукоризненного вида.</p>
-  </div>
+    <div class="cut__stage cut__stage--left"  style="top:56.25%">
+      <span class="cut__stage-num">05</span>
+      <h3 class="cut__stage-title">Пошив</h3>
+      <p class="cut__stage-desc">Мастер приступает к работе. Срок — от двух до шести недель в зависимости от сложности.</p>
+    </div>
 
-  <div class="cut__stage cut__stage--right" style="top:93.75%">
-    <span class="cut__stage-num">08</span>
-    <h3 class="cut__stage-title">Ваше платье готово</h3>
-    <p class="cut__stage-desc">Упаковываем и вручаем. Дорого. Долго. Шикарно.</p>
-  </div>
+    <div class="cut__stage cut__stage--right" style="top:68.75%">
+      <span class="cut__stage-num">06</span>
+      <h3 class="cut__stage-title">Примерка</h3>
+      <p class="cut__stage-desc">Примеряете изделие и вместе отмечаем всё, что нужно скорректировать под фигуру.</p>
+    </div>
 
-  <svg class="cut__svg" aria-hidden="true">
-    <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>
-  </svg>
-  <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
+    <div class="cut__stage cut__stage--left"  style="top:81.25%">
+      <span class="cut__stage-num">07</span>
+      <h3 class="cut__stage-title">Доработка</h3>
+      <p class="cut__stage-desc">Вносим все правки, добиваемся безупречной посадки и безукоризненного вида.</p>
+    </div>
+
+    <div class="cut__stage cut__stage--right" style="top:93.75%">
+      <span class="cut__stage-num">08</span>
+      <h3 class="cut__stage-title">Ваше платье готово</h3>
+      <p class="cut__stage-desc">Упаковываем и вручаем. Дорого. Долго. Шикарно.</p>
+    </div>
+
+    <svg class="cut__svg" aria-hidden="true">
+      <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>
+    </svg>
+    <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
+
+  </div>
 </section>
 
 <script>
@@ -769,14 +802,15 @@
 
   /* ── Cut section ── */
   const cutSection  = document.getElementById('cutSection');
+  const cutBody     = document.getElementById('cutBody');
   const cutScissors = document.getElementById('cutScissors');
   const cutPathEl   = document.getElementById('cutPathLine');
   const CUT_FREQ = Math.PI * 6;
   const CUT_AMP  = 50;
 
   function buildCutPath() {
-    const sW = cutSection.offsetWidth;
-    const sH = cutSection.offsetHeight;
+    const sW = cutBody.offsetWidth;
+    const sH = cutBody.offsetHeight;
     const cx = sW / 2;
     let d = '';
     for (let i = 0; i <= 300; i++) {
@@ -789,15 +823,14 @@
   }
 
   function updateCut() {
-    const rect = cutSection.getBoundingClientRect();
-    const sH = cutSection.offsetHeight;
+    const rect = cutBody.getBoundingClientRect();
+    const sH = cutBody.offsetHeight;
     const vH = window.innerHeight;
     const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
 
     const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
 
-    // Угол наклона линии разреза в данной точке
     const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
     const dy = sH - 40;
     // Угол касательной к траектории (направление движения)
