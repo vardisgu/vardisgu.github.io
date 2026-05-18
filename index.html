@@ -473,16 +473,6 @@
       padding: clamp(10px, 1.4vh, 18px) 0;
     }
 
-    /* Точка в центральной колонке */
-    .cut__item::after {
-      content: '';
-      grid-column: 2; grid-row: 1;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: rgba(10,5,0,0.22);
-      justify-self: center;
-    }
-
     /* Нечётные: карточка слева */
     .cut__item:nth-child(odd) .cut__card {
       grid-column: 1; grid-row: 1;
@@ -821,22 +811,29 @@
   const cutBody     = document.getElementById('cutBody');
   const cutScissors = document.getElementById('cutScissors');
   const cutPathEl   = document.getElementById('cutPathLine');
-  /* FREQ=7.5π: за 8 этапов ровно 3.75 полуволны → каждый следующий этап
-     ножницы на противоположной стороне от карточки.
-     cos вместо sin: сразу полное отклонение с первого этапа. */
   const CUT_FREQ = Math.PI * 7.5;
   const CUT_AMP  = 46;
+  const cutItems = cutBody.querySelectorAll('.cut__item');
+
+  function itemCenters() {
+    const first = cutItems[0];
+    const last  = cutItems[cutItems.length - 1];
+    return {
+      y0: first.offsetTop + first.offsetHeight / 2,
+      y1: last.offsetTop  + last.offsetHeight  / 2
+    };
+  }
 
   function buildCutPath() {
     const sW = cutBody.offsetWidth;
-    const sH = cutBody.offsetHeight;
-    if (!sH) return;
+    if (!sW) return;
+    const { y0, y1 } = itemCenters();
     const cx = sW / 2;
     let d = '';
     for (let i = 0; i <= 300; i++) {
       const p = i / 300;
       const x = cx + Math.cos(p * CUT_FREQ) * CUT_AMP;
-      const y = p * (sH - 40) + 20;
+      const y = y0 + p * (y1 - y0);
       d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
     }
     cutPathEl.setAttribute('d', d.trim());
@@ -844,26 +841,28 @@
 
   function updateCut() {
     const rect = cutBody.getBoundingClientRect();
-    const sH = cutBody.offsetHeight;
-    const vH = window.innerHeight;
+    const sH   = cutBody.offsetHeight;
+    const vH   = window.innerHeight;
     const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
 
-    const x = Math.cos(progress * CUT_FREQ) * CUT_AMP;
-    const y = progress * (sH - 40);
+    const { y0, y1 } = itemCenters();
+    const span = y1 - y0;
 
-    /* производная cos(t*F)*A → -sin(t*F)*A*F */
+    const x       = Math.cos(progress * CUT_FREQ) * CUT_AMP;
+    const yCenter = y0 + progress * span;
+    const yTop    = yCenter - 20;          /* scissors image is 40px tall */
+
     const dx = -Math.sin(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
-    const dy = sH - 40;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    const finalAngle = angle - 90;
+    const dy = span;
+    const finalAngle = Math.atan2(dy, dx) * 180 / Math.PI - 90;
 
     cutScissors.style.transform =
-      `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${finalAngle}deg)`;
+      `translateX(calc(-50% + ${x}px)) translateY(${yTop}px) rotate(${finalAngle}deg)`;
   }
 
   buildCutPath();
   window.addEventListener('resize', buildCutPath);
-  window.addEventListener('load', buildCutPath);
+  window.addEventListener('load',   buildCutPath);
 
   /* ── Parallax + cut ── */
   let ticking = false;
