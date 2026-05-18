@@ -357,12 +357,12 @@
       position: relative;
     }
 
-    /* Градиент в низу philosophy: плавный переход к золотой секции */
+    /* Короткий градиент в низу: тёмный → золото */
     .philosophy::after {
       content: '';
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: clamp(80px, 14vh, 140px);
+      height: 52px;
       background: linear-gradient(to bottom, transparent, var(--gold));
       pointer-events: none;
     }
@@ -454,6 +454,17 @@
       min-height: 480px;
       position: relative;
       overflow: hidden;
+    }
+
+    /* Короткий градиент сверху: чёрный → прозрачно (~50px) */
+    .cut-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+      z-index: 1;
+      pointer-events: none;
     }
 
     .cut__line {
