@@ -506,6 +506,152 @@
 
       .philosophy__text { max-width: 100%; }
     }
+
+    /* ══════════════════════════════════════
+       STEPS — Этапы работы
+    ══════════════════════════════════════ */
+    .steps {
+      background: var(--dark);
+      padding: clamp(80px, 12vh, 128px) clamp(24px, 8vw, 120px);
+    }
+
+    .steps__inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .steps__heading {
+      font-family: 'Cinzel', serif;
+      font-weight: 400;
+      font-size: clamp(18px, 2.4vw, 28px);
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: clamp(56px, 9vh, 100px);
+    }
+    .steps__heading em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .steps__list {
+      position: relative;
+    }
+    .steps__list::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(201,169,110,0.22) 6%,
+        rgba(201,169,110,0.22) 94%,
+        transparent
+      );
+      transform: translateX(-50%);
+    }
+
+    .steps__item {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      align-items: center;
+      padding: clamp(20px, 3.5vh, 36px) 0;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.75s var(--expo), transform 0.75s var(--expo);
+    }
+    .steps__item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .steps__dot {
+      grid-column: 2;
+      grid-row: 1;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      justify-self: center;
+      box-shadow: 0 0 14px rgba(201,169,110,0.45);
+    }
+
+    .steps__card {
+      max-width: 400px;
+    }
+
+    /* Odd: card left, right-aligned text */
+    .steps__item:nth-child(odd) .steps__card {
+      grid-column: 1;
+      grid-row: 1;
+      padding-right: 52px;
+      text-align: right;
+      justify-self: end;
+    }
+
+    /* Even: card right, left-aligned text */
+    .steps__item:nth-child(even) .steps__card {
+      grid-column: 3;
+      grid-row: 1;
+      padding-left: 52px;
+      text-align: left;
+      justify-self: start;
+    }
+
+    .steps__num {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      color: var(--gold);
+      margin-bottom: 7px;
+    }
+
+    .steps__title {
+      font-family: 'Cinzel', serif;
+      font-weight: 400;
+      font-size: clamp(14px, 1.4vw, 18px);
+      color: var(--white);
+      letter-spacing: 0.14em;
+      margin-bottom: 9px;
+    }
+
+    .steps__desc {
+      font-family: 'Raleway', sans-serif;
+      font-weight: 300;
+      font-size: clamp(12px, 1vw, 14px);
+      color: var(--dim);
+      line-height: 1.75;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 700px) {
+      .steps__list::before { left: 14px; }
+
+      .steps__item {
+        grid-template-columns: 28px 1fr;
+        grid-template-rows: auto;
+      }
+      .steps__dot {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: start;
+        margin-top: 5px;
+      }
+      .steps__item:nth-child(odd) .steps__card,
+      .steps__item:nth-child(even) .steps__card {
+        grid-column: 2;
+        grid-row: 1;
+        padding-left: 20px;
+        padding-right: 0;
+        text-align: left;
+        justify-self: start;
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -696,17 +842,20 @@
     const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
 
-    /* base: 155° вправо, 90° вниз, 25° влево (непрерывно).
-       При dx<0 добавляем 180° → 205° (зеркало 155°).
-       Переключение происходит ровно при 90°/270° — иконка симметрична → прыжок невидим. */
-    const dx    = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
-    const dy    = sH - 40;
-    const base  = Math.atan2(dy, -dx) * 180 / Math.PI;
-    const angle = dx < 0 ? base + 180 : base;
+    // Угол наклона линии разреза в данной точке
+    const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
+    const dy = sH - 40;
+    // Угол касательной к траектории (направление движения)
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    
+    // Корректировка: ножницы должны быть направлены остриём по линии
+    // Если стандартное положение ножниц — остриём вверх (0°),
+    // то добавляем 90° чтобы остриё смотрело вниз по линии разреза
+    const finalAngle = angle - 90;
 
     cutScissors.style.transform =
-      `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
-  }
+      `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${finalAngle}deg)`;
+}
 
   buildCutPath();
   window.addEventListener('resize', buildCutPath);
