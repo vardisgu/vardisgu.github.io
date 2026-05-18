@@ -357,15 +357,6 @@
       position: relative;
     }
 
-    /* Короткий градиент в низу: тёмный → золото */
-    .philosophy::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 52px;
-      background: linear-gradient(to bottom, transparent, var(--gold));
-      pointer-events: none;
-    }
 
     .philosophy__grid {
       display: grid;
@@ -456,12 +447,12 @@
       overflow: hidden;
     }
 
-    /* Короткий градиент сверху: чёрный → прозрачно (~50px) */
+    /* Один градиент: чёрный → золото в верху секции */
     .cut-section::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 50px;
+      height: 70px;
       background: linear-gradient(to bottom, var(--dark), transparent);
       z-index: 1;
       pointer-events: none;
