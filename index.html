@@ -210,7 +210,7 @@
       white-space: nowrap;
     }
 
-    /* Золотой блик — проходит один раз после появления слов */
+    /* Золотой блик — невидим до старта, opacity внутри keyframes */
     .hero__slogan::after {
       content: '';
       position: absolute;
@@ -218,19 +218,23 @@
       background: linear-gradient(
         90deg,
         transparent 40%,
-        rgba(232, 201, 138, 0.22) 50%,
+        rgba(232, 201, 138, 0.28) 50%,
         transparent 60%
       );
       background-size: 220% 100%;
       background-position: 180% 0;
+      opacity: 0;
       pointer-events: none;
     }
     .hero--ready .hero__slogan::after {
-      animation: shimmer 1.4s var(--expo) 1.6s 1 forwards;
+      animation: shimmer 1.6s var(--expo) 1.6s 1 forwards;
     }
 
     @keyframes shimmer {
-      to { background-position: -80% 0; }
+      0%   { background-position: 180% 0; opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { background-position: -80% 0; opacity: 0; }
     }
 
     /* Маска для каждого слова — inline */
@@ -241,7 +245,7 @@
     }
 
     .hero__word-clip + .hero__word-clip {
-      margin-left: 0.22em;
+      margin-left: 0.5em;
     }
 
     .hero__word {
@@ -304,11 +308,27 @@
        MOBILE
     ══════════════════════════════════════ */
     @media (max-width: 640px) {
-      .hero__bg { background-position: 68% center; }
+      /* Показываем девушку по центру: 68% по горизонтали, 38% по вертикали */
+      .hero__bg { background-position: 68% 38%; }
 
+      /* Слоган — уменьшаем до размера, который влезает в одну строку */
       .hero__word {
-        font-size: clamp(34px, 11vw, 50px);
+        font-size: clamp(15px, 5.2vw, 28px);
       }
+
+      /* Чуть меньше отступов по бокам */
+      .hero__bottom { padding-bottom: clamp(28px, 5vh, 44px); gap: 16px; }
+      .hero__top    { padding-top:    clamp(26px, 4.5vh, 44px); gap: 10px; }
+
+      /* Кнопка: чуть уже на мобиле */
+      .hero__cta { padding: 13px 28px; font-size: 10px; }
+    }
+
+    /* На совсем узких экранах (<400px) разрешаем слогану переноситься */
+    @media (max-width: 399px) {
+      .hero__slogan  { white-space: normal; }
+      .hero__word-clip { display: block; margin-left: 0; }
+      .hero__word    { font-size: clamp(22px, 7.5vw, 28px); }
     }
   </style>
 </head>
