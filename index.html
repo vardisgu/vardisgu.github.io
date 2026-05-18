@@ -536,23 +536,38 @@
       z-index: 3;
     }
 
-    /* Mobile */
+    /* ── CUT SECTION: мобильная адаптация ── */
     @media (max-width: 640px) {
-      .cut__item { grid-template-columns: 0 36px 1fr; }
-      .cut__item:nth-child(odd) .cut__card {
-        grid-column: 3; text-align: left;
-        padding-right: 0; padding-left: 20px;
-        justify-self: start;
+      .cut-section { padding: 44px 12px; }
+      .cut__heading { font-size: 15px; letter-spacing: 0.24em; margin-bottom: 28px; }
+
+      /* Оставляем шахматный порядок, только уже */
+      .cut__item {
+        grid-template-columns: 1fr 24px 1fr;
+        padding: 7px 0;
       }
+      .cut__item:nth-child(odd) .cut__card {
+        padding-right: 8px;
+        max-width: none;
+      }
+      .cut__item:nth-child(even) .cut__card {
+        padding-left: 8px;
+        max-width: none;
+      }
+      .cut__num    { font-size: 8px;  margin-bottom: 3px; }
+      .cut__ctitle { font-size: 11px; letter-spacing: 0.1em; margin-bottom: 4px; }
+      .cut__cdesc  { font-size: 10px; line-height: 1.55; }
     }
 
-    /* ── MOBILE: стопка ── */
+    @media (max-width: 380px) {
+      /* На совсем маленьких экранах прячем описания чтобы не было каши */
+      .cut__cdesc { display: none; }
+    }
+
+    /* ── PHILOSOPHY: стопка (планшет) ── */
     @media (max-width: 860px) {
       .philosophy { padding: clamp(56px, 9vh, 96px) clamp(24px, 7vw, 56px); }
-
-      .philosophy__grid {
-        grid-template-columns: 1fr;
-      }
+      .philosophy__grid { grid-template-columns: 1fr; }
 
       .philosophy__sep {
         width: 100%;
@@ -569,8 +584,18 @@
 
       .philosophy__item:nth-child(3),
       .philosophy__item:nth-child(5) { transition-delay: 0s; }
-
       .philosophy__text { max-width: 100%; }
+    }
+
+    /* ── PHILOSOPHY: компактная мобильная версия ── */
+    @media (max-width: 560px) {
+      .philosophy { padding: 36px 20px; }
+      .philosophy__item { gap: 8px; }
+      .philosophy__word { font-size: clamp(22px, 7.5vw, 28px); }
+      .philosophy__rule { margin-top: 0; }
+      .philosophy__text { font-size: 11px; line-height: 1.62; }
+      .philosophy__sep  { margin: 16px 0; }
+      .philosophy__num  { font-size: 10px; }
     }
 
   </style>
