@@ -811,8 +811,11 @@
   const cutBody     = document.getElementById('cutBody');
   const cutScissors = document.getElementById('cutScissors');
   const cutPathEl   = document.getElementById('cutPathLine');
-  const CUT_FREQ = Math.PI * 7.5;
-  const CUT_AMP  = 46;
+  /* 7π = ровно 7 полуволн на 8 блоков:
+     на каждом чётном блоке (карточка справа) — ножницы в крайней левой точке,
+     на каждом нечётном (карточка слева) — в крайней правой. */
+  const CUT_FREQ = Math.PI * 7;
+  const CUT_AMP  = 52;
   const cutItems = cutBody.querySelectorAll('.cut__item');
 
   function itemCenters() {
