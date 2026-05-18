@@ -531,29 +531,35 @@
     }
 
     /* ══════════════════════════════════════
-       CUT STAGE CARDS
+       CUT — СПИСОК ЭТАПОВ (flow layout)
     ══════════════════════════════════════ */
-    .cut__stage {
-      position: absolute;
-      width: calc(50% - 80px);
-      max-width: 380px;
-      transform: translateY(-50%);
-      z-index: 4;
-      pointer-events: none;
+    .cut__list {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(16px, 2.5vh, 28px) 0;
     }
-    .cut__stage--left {
-      left: 0;
+
+    .cut__item {
+      display: grid;
+      grid-template-columns: 1fr 100px 1fr;
+      align-items: center;
+      padding: 0 clamp(24px, 5vw, 72px);
+    }
+
+    .cut__item:nth-child(odd) .cut__card {
+      grid-column: 1; grid-row: 1;
       text-align: right;
-      padding-right: 60px;
-      padding-left: clamp(24px, 5vw, 60px);
+      padding-right: 12px;
     }
-    .cut__stage--right {
-      right: 0;
+    .cut__item:nth-child(even) .cut__card {
+      grid-column: 3; grid-row: 1;
       text-align: left;
-      padding-left: 60px;
-      padding-right: clamp(24px, 5vw, 60px);
+      padding-left: 12px;
     }
-    .cut__stage-num {
+
+    .cut__num {
       display: block;
       font-family: 'Cinzel', serif;
       font-size: 10px;
@@ -561,7 +567,7 @@
       color: rgba(10,5,0,0.38);
       margin-bottom: 7px;
     }
-    .cut__stage-title {
+    .cut__ctitle {
       font-family: 'Cinzel', serif;
       font-weight: 400;
       font-size: clamp(14px, 1.4vw, 18px);
@@ -569,7 +575,7 @@
       letter-spacing: 0.14em;
       margin-bottom: 9px;
     }
-    .cut__stage-desc {
+    .cut__cdesc {
       font-family: 'Raleway', sans-serif;
       font-weight: 300;
       font-size: clamp(12px, 1vw, 14px);
@@ -578,9 +584,10 @@
     }
 
     @media (max-width: 640px) {
-      .cut__stage { width: calc(50% - 36px); max-width: none; }
-      .cut__stage--left  { padding-right: 28px; padding-left: 14px; }
-      .cut__stage--right { padding-left: 28px;  padding-right: 14px; }
+      .cut__item { grid-template-columns: 0 52px 1fr; padding-left: 0; }
+      .cut__item:nth-child(odd) .cut__card {
+        grid-column: 3; text-align: left; padding-right: 0; padding-left: 10px;
+      }
     }
   </style>
 </head>
@@ -689,56 +696,76 @@
 
   <div class="cut__body" id="cutBody">
 
-    <div class="cut__stage cut__stage--left"  style="top:6.25%">
-      <span class="cut__stage-num">01</span>
-      <h3 class="cut__stage-title">Заявка</h3>
-      <p class="cut__stage-desc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня.</p>
-    </div>
+    <div class="cut__list">
 
-    <div class="cut__stage cut__stage--right" style="top:18.75%">
-      <span class="cut__stage-num">02</span>
-      <h3 class="cut__stage-title">Обсуждение</h3>
-      <p class="cut__stage-desc">Обсуждаем пожелания: ткань, фасон, силуэт и все детали будущего изделия.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">01</span>
+          <h3 class="cut__ctitle">Заявка</h3>
+          <p class="cut__cdesc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--left"  style="top:31.25%">
-      <span class="cut__stage-num">03</span>
-      <h3 class="cut__stage-title">Встреча и материал</h3>
-      <p class="cut__stage-desc">Встречаемся в ателье, выбираем ткани и фурнитуру, утверждаем эскиз.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">02</span>
+          <h3 class="cut__ctitle">Обсуждение</h3>
+          <p class="cut__cdesc">Обсуждаем пожелания: ткань, фасон, силуэт и все детали будущего изделия.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--right" style="top:43.75%">
-      <span class="cut__stage-num">04</span>
-      <h3 class="cut__stage-title">Снятие мерок</h3>
-      <p class="cut__stage-desc">Тщательно снимаем все мерки. Каждый сантиметр важен для идеального кроя.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">03</span>
+          <h3 class="cut__ctitle">Встреча и материал</h3>
+          <p class="cut__cdesc">Встречаемся в ателье, выбираем ткани и фурнитуру, утверждаем эскиз.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--left"  style="top:56.25%">
-      <span class="cut__stage-num">05</span>
-      <h3 class="cut__stage-title">Пошив</h3>
-      <p class="cut__stage-desc">Мастер приступает к работе. Срок — от двух до шести недель в зависимости от сложности.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">04</span>
+          <h3 class="cut__ctitle">Снятие мерок</h3>
+          <p class="cut__cdesc">Тщательно снимаем все мерки. Каждый сантиметр важен для идеального кроя.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--right" style="top:68.75%">
-      <span class="cut__stage-num">06</span>
-      <h3 class="cut__stage-title">Примерка</h3>
-      <p class="cut__stage-desc">Примеряете изделие и вместе отмечаем всё, что нужно скорректировать под фигуру.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">05</span>
+          <h3 class="cut__ctitle">Пошив</h3>
+          <p class="cut__cdesc">Мастер приступает к работе. Срок — от двух до шести недель в зависимости от сложности.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--left"  style="top:81.25%">
-      <span class="cut__stage-num">07</span>
-      <h3 class="cut__stage-title">Доработка</h3>
-      <p class="cut__stage-desc">Вносим все правки, добиваемся безупречной посадки и безукоризненного вида.</p>
-    </div>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">06</span>
+          <h3 class="cut__ctitle">Примерка</h3>
+          <p class="cut__cdesc">Примеряете изделие и вместе отмечаем всё, что нужно скорректировать под фигуру.</p>
+        </div>
+      </div>
 
-    <div class="cut__stage cut__stage--right" style="top:93.75%">
-      <span class="cut__stage-num">08</span>
-      <h3 class="cut__stage-title">Ваше платье готово</h3>
-      <p class="cut__stage-desc">Упаковываем и вручаем. Дорого. Долго. Шикарно.</p>
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">07</span>
+          <h3 class="cut__ctitle">Доработка</h3>
+          <p class="cut__cdesc">Вносим все правки, добиваемся безупречной посадки и безукоризненного вида.</p>
+        </div>
+      </div>
+
+      <div class="cut__item">
+        <div class="cut__card">
+          <span class="cut__num">08</span>
+          <h3 class="cut__ctitle">Ваше платье готово</h3>
+          <p class="cut__cdesc">Упаковываем и вручаем. Дорого. Долго. Шикарно.</p>
+        </div>
+      </div>
+
     </div>
 
     <svg class="cut__svg" aria-hidden="true">
-      <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>
+      <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
     </svg>
     <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
 
