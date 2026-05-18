@@ -680,9 +680,11 @@
     const rect = cutSection.getBoundingClientRect();
     const sH = cutSection.offsetHeight;
     const vH = window.innerHeight;
-    // 0 = ножницы только появились снизу, 1 = ножницы ушли за верх экрана
     const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
-    cutScissors.style.transform = `translateX(-50%) translateY(${progress * (sH - 40)}px)`;
+    const x = Math.sin(progress * Math.PI * 6) * 50; // ±50px, 3 полных колебания
+    const y = progress * (sH - 40);
+    const angle = Math.cos(progress * Math.PI * 6) * 18; // наклон по направлению движения
+    cutScissors.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
   }
 
   /* ── Parallax + cut ── */
