@@ -696,10 +696,10 @@
     const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
 
-    /* Настоящий угол касательной к траектории */
+    /* Ножницы перпендикулярны пути — режут линию поперёк */
     const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
     const dy = sH - 40;
-    const angle = Math.atan2(dx, dy) * 180 / Math.PI;
+    const angle = Math.atan2(dx, dy) * 180 / Math.PI - 90;
 
     cutScissors.style.transform =
       `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
