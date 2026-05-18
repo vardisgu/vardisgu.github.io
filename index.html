@@ -470,7 +470,7 @@
       display: grid;
       grid-template-columns: 1fr 40px 1fr;
       align-items: center;
-      padding: clamp(20px, 3.5vh, 36px) 0;
+      padding: clamp(10px, 1.4vh, 18px) 0;
     }
 
     /* Точка в центральной колонке */
@@ -821,17 +821,21 @@
   const cutBody     = document.getElementById('cutBody');
   const cutScissors = document.getElementById('cutScissors');
   const cutPathEl   = document.getElementById('cutPathLine');
-  const CUT_FREQ = Math.PI * 6;
-  const CUT_AMP  = 50;
+  /* FREQ=7.5π: за 8 этапов ровно 3.75 полуволны → каждый следующий этап
+     ножницы на противоположной стороне от карточки.
+     cos вместо sin: сразу полное отклонение с первого этапа. */
+  const CUT_FREQ = Math.PI * 7.5;
+  const CUT_AMP  = 46;
 
   function buildCutPath() {
     const sW = cutBody.offsetWidth;
     const sH = cutBody.offsetHeight;
+    if (!sH) return;
     const cx = sW / 2;
     let d = '';
     for (let i = 0; i <= 300; i++) {
       const p = i / 300;
-      const x = cx + Math.sin(p * CUT_FREQ) * CUT_AMP;
+      const x = cx + Math.cos(p * CUT_FREQ) * CUT_AMP;
       const y = p * (sH - 40) + 20;
       d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
     }
@@ -844,25 +848,22 @@
     const vH = window.innerHeight;
     const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
 
-    const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
+    const x = Math.cos(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
 
-    const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
+    /* производная cos(t*F)*A → -sin(t*F)*A*F */
+    const dx = -Math.sin(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
     const dy = sH - 40;
-    // Угол касательной к траектории (направление движения)
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    
-    // Корректировка: ножницы должны быть направлены остриём по линии
-    // Если стандартное положение ножниц — остриём вверх (0°),
-    // то добавляем 90° чтобы остриё смотрело вниз по линии разреза
     const finalAngle = angle - 90;
 
     cutScissors.style.transform =
       `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${finalAngle}deg)`;
-}
+  }
 
   buildCutPath();
   window.addEventListener('resize', buildCutPath);
+  window.addEventListener('load', buildCutPath);
 
   /* ── Parallax + cut ── */
   let ticking = false;
