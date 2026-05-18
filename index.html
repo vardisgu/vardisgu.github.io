@@ -439,9 +439,21 @@
     ══════════════════════════════════════ */
     .cut-section {
       background: var(--gold);
-      height: 160vh;
+      height: 80vh;
+      min-height: 480px;
       position: relative;
       overflow: hidden;
+    }
+
+    /* Градиент сверху: плавный переход от тёмной философской секции */
+    .cut-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 35%;
+      background: linear-gradient(to bottom, var(--dark), transparent);
+      z-index: 1;
+      pointer-events: none;
     }
 
     .cut__line {
@@ -451,10 +463,11 @@
       height: 100%;
       width: 1px;
       transform: translateX(-50%);
+      z-index: 2;
       background: linear-gradient(
         to bottom,
         transparent 0%,
-        rgba(0,0,0,0.18) 8%,
+        rgba(0,0,0,0.18) 20%,
         rgba(0,0,0,0.18) 92%,
         transparent 100%
       );
@@ -470,6 +483,7 @@
       mix-blend-mode: multiply;
       will-change: transform;
       pointer-events: none;
+      z-index: 3;
     }
 
     /* ── MOBILE: стопка ── */
@@ -544,14 +558,6 @@
 </section>
 
 <!-- ══════════════════════════════════════
-     CUT SECTION — ножницы
-══════════════════════════════════════ -->
-<section class="cut-section" id="cutSection">
-  <div class="cut__line"></div>
-  <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
-</section>
-
-<!-- ══════════════════════════════════════
      PHILOSOPHY SECTION — Дорого. Долго. Шикарно.
 ══════════════════════════════════════ -->
 <section class="philosophy" id="philosophy">
@@ -599,6 +605,14 @@
     </div>
 
   </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     CUT SECTION — ножницы
+══════════════════════════════════════ -->
+<section class="cut-section" id="cutSection">
+  <div class="cut__line"></div>
+  <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
 </section>
 
 <script>
@@ -663,10 +677,8 @@
   function updateCut() {
     const rect = cutSection.getBoundingClientRect();
     const sH = cutSection.offsetHeight;
-    const vH = window.innerHeight;
-    const scrollable = sH - vH;
-    if (scrollable <= 0) return;
-    const progress = Math.max(0, Math.min(1, -rect.top / scrollable));
+    // progress 0→1: когда верх секции достигает верха вьюпорта → пока секция не уходит вверх
+    const progress = Math.max(0, Math.min(1, -rect.top / sH));
     cutScissors.style.transform = `translateX(-50%) translateY(${progress * (sH - 40)}px)`;
   }
 
