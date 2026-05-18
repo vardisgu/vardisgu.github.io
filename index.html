@@ -553,9 +553,9 @@
         padding-left: 10px;
         max-width: none;
       }
-      .cut__num    { font-size: 9px;  letter-spacing: 0.22em; margin-bottom: 4px; }
-      .cut__ctitle { font-size: 12px; letter-spacing: 0.08em; margin-bottom: 5px; }
-      .cut__cdesc  { font-size: 10px; line-height: 1.6; }
+      .cut__num    { font-size: 10px; letter-spacing: 0.22em; margin-bottom: 4px; }
+      .cut__ctitle { font-size: 13px; letter-spacing: 0.08em; margin-bottom: 5px; }
+      .cut__cdesc  { font-size: 11px; line-height: 1.65; }
     }
 
     /* ── PHILOSOPHY: стопка (планшет) ── */
@@ -585,11 +585,11 @@
     @media (max-width: 560px) {
       .philosophy { padding: 36px 20px; }
       .philosophy__item { gap: 8px; }
-      .philosophy__word { font-size: clamp(22px, 7.5vw, 28px); }
+      .philosophy__word { font-size: clamp(26px, 8.5vw, 34px); }
       .philosophy__rule { margin-top: 0; }
-      .philosophy__text { font-size: 11px; line-height: 1.62; }
+      .philosophy__text { font-size: 13px; line-height: 1.65; }
       .philosophy__sep  { margin: 16px 0; }
-      .philosophy__num  { font-size: 10px; }
+      .philosophy__num  { font-size: 11px; }
     }
 
   </style>
@@ -837,14 +837,17 @@
   const CUT_AMP  = 52;
   const cutItems = cutBody.querySelectorAll('.cut__item');
 
-  /* Кешированные значения — пересчитываются только при resize/load,
-     не читаются из DOM на каждый кадр прокрутки (иначе — reflow и дёргание) */
-  let _cutY0 = 0, _cutY1 = 0, _cutSH = 0;
+  /* Всё layout-зависимое кешируется при buildCutPath (resize/load).
+     В rAF-колбэке — ноль обращений к DOM-layout, только pageYOffset. */
+  let _cutY0 = 0, _cutY1 = 0, _cutSH = 0, _cutDocTop = 0, _heroH = 0;
 
   function buildCutPath() {
     const sW = cutBody.offsetWidth;
     _cutSH   = cutBody.offsetHeight;
     if (!sW || !_cutSH) return;
+
+    _heroH     = hero.offsetHeight;
+    _cutDocTop = cutBody.getBoundingClientRect().top + window.pageYOffset;
 
     const first = cutItems[0];
     const last  = cutItems[cutItems.length - 1];
@@ -864,14 +867,14 @@
 
   function updateCut() {
     if (!_cutSH) return;
-    /* getBoundingClientRect — только чтение composite-слоя, не reflow */
-    const top  = cutBody.getBoundingClientRect().top;
-    const vH   = window.innerHeight;
+    const scrollY = window.pageYOffset;          /* compositor — no reflow */
+    const vH      = window.innerHeight;
+    const top     = _cutDocTop - scrollY;
     const progress = Math.max(0, Math.min(1, (vH - top) / (vH + _cutSH)));
 
-    const span    = _cutY1 - _cutY0;
-    const x       = Math.cos(progress * CUT_FREQ) * CUT_AMP;
-    const yTop    = _cutY0 + progress * span - 20;
+    const span = _cutY1 - _cutY0;
+    const x    = Math.cos(progress * CUT_FREQ) * CUT_AMP;
+    const yTop = _cutY0 + progress * span - 20;
 
     const dx = -Math.sin(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
     const finalAngle = Math.atan2(span, dx) * 180 / Math.PI - 90;
@@ -884,17 +887,15 @@
   window.addEventListener('resize', buildCutPath);
   window.addEventListener('load',   buildCutPath);
 
-  /* ── Parallax + cut ── */
+  /* ── Parallax + cut — ноль layout-reads в rAF ── */
   let ticking = false;
   window.addEventListener('scroll', () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => {
       const y = window.pageYOffset;
-      const h = hero.offsetHeight;
-      if (y < h) {
-        const shift = (y / h) * 55;
-        bg.style.transform = `scale(1.15) translateY(-${shift}px)`;
+      if (y < _heroH) {
+        bg.style.transform = `scale(1.15) translateY(-${(y / _heroH) * 55}px)`;
       }
       updateCut();
       ticking = false;
