@@ -458,21 +458,13 @@
       pointer-events: none;
     }
 
-    .cut__line {
+    .cut__svg {
       position: absolute;
-      left: 50%;
-      top: 0;
-      height: 100%;
-      width: 1px;
-      transform: translateX(-50%);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: 2;
-      background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        rgba(0,0,0,0.18) 20%,
-        rgba(0,0,0,0.18) 92%,
-        transparent 100%
-      );
+      pointer-events: none;
+      overflow: visible;
     }
 
     .cut__scissors {
@@ -613,7 +605,9 @@
      CUT SECTION — ножницы
 ══════════════════════════════════════ -->
 <section class="cut-section" id="cutSection">
-  <div class="cut__line"></div>
+  <svg class="cut__svg" aria-hidden="true">
+    <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>
+  </svg>
   <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
 </section>
 
@@ -672,20 +666,47 @@
     philItems.forEach(el => io.observe(el));
   }
 
-  /* ── Cut section: ножницы едут сверху вниз при скролле ── */
+  /* ── Cut section ── */
   const cutSection  = document.getElementById('cutSection');
   const cutScissors = document.getElementById('cutScissors');
+  const cutPathEl   = document.getElementById('cutPathLine');
+  const CUT_FREQ = Math.PI * 6;
+  const CUT_AMP  = 50;
+
+  function buildCutPath() {
+    const sW = cutSection.offsetWidth;
+    const sH = cutSection.offsetHeight;
+    const cx = sW / 2;
+    let d = '';
+    for (let i = 0; i <= 300; i++) {
+      const p = i / 300;
+      const x = cx + Math.sin(p * CUT_FREQ) * CUT_AMP;
+      const y = p * (sH - 40) + 20;
+      d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+    }
+    cutPathEl.setAttribute('d', d.trim());
+  }
 
   function updateCut() {
     const rect = cutSection.getBoundingClientRect();
     const sH = cutSection.offsetHeight;
     const vH = window.innerHeight;
     const progress = Math.max(0, Math.min(1, (vH - rect.top) / (vH + sH)));
-    const x = Math.sin(progress * Math.PI * 6) * 50; // ±50px, 3 полных колебания
+
+    const x = Math.sin(progress * CUT_FREQ) * CUT_AMP;
     const y = progress * (sH - 40);
-    const angle = Math.cos(progress * Math.PI * 6) * 18; // наклон по направлению движения
-    cutScissors.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
+
+    /* Настоящий угол касательной к траектории */
+    const dx = Math.cos(progress * CUT_FREQ) * CUT_AMP * CUT_FREQ;
+    const dy = sH - 40;
+    const angle = Math.atan2(dx, dy) * 180 / Math.PI;
+
+    cutScissors.style.transform =
+      `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`;
   }
+
+  buildCutPath();
+  window.addEventListener('resize', buildCutPath);
 
   /* ── Parallax + cut ── */
   let ticking = false;
