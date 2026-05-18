@@ -441,8 +441,7 @@
     ══════════════════════════════════════ */
     .cut-section {
       background: var(--gold);
-      height: 80vh;
-      min-height: 480px;
+      height: max(180vh, 900px);
       position: relative;
       overflow: hidden;
     }
@@ -508,149 +507,56 @@
     }
 
     /* ══════════════════════════════════════
-       STEPS — Этапы работы
+       CUT STAGE CARDS
     ══════════════════════════════════════ */
-    .steps {
-      background: var(--dark);
-      padding: clamp(80px, 12vh, 128px) clamp(24px, 8vw, 120px);
-    }
-
-    .steps__inner {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .steps__heading {
-      font-family: 'Cinzel', serif;
-      font-weight: 400;
-      font-size: clamp(18px, 2.4vw, 28px);
-      letter-spacing: 0.36em;
-      text-transform: uppercase;
-      color: var(--white);
-      text-align: center;
-      margin-bottom: clamp(56px, 9vh, 100px);
-    }
-    .steps__heading em {
-      color: var(--gold);
-      font-style: normal;
-    }
-
-    .steps__list {
-      position: relative;
-    }
-    .steps__list::before {
-      content: '';
+    .cut__stage {
       position: absolute;
-      left: 50%;
-      top: 0; bottom: 0;
-      width: 1px;
-      background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(201,169,110,0.22) 6%,
-        rgba(201,169,110,0.22) 94%,
-        transparent
-      );
-      transform: translateX(-50%);
+      width: calc(50% - 72px);
+      transform: translateY(-50%);
+      z-index: 4;
+      pointer-events: none;
     }
-
-    .steps__item {
-      display: grid;
-      grid-template-columns: 1fr 40px 1fr;
-      align-items: center;
-      padding: clamp(20px, 3.5vh, 36px) 0;
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.75s var(--expo), transform 0.75s var(--expo);
-    }
-    .steps__item.visible {
-      opacity: 1;
-      transform: none;
-    }
-
-    .steps__dot {
-      grid-column: 2;
-      grid-row: 1;
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--gold);
-      justify-self: center;
-      box-shadow: 0 0 14px rgba(201,169,110,0.45);
-    }
-
-    .steps__card {
-      max-width: 400px;
-    }
-
-    /* Odd: card left, right-aligned text */
-    .steps__item:nth-child(odd) .steps__card {
-      grid-column: 1;
-      grid-row: 1;
-      padding-right: 52px;
+    .cut__stage--left {
+      left: 0;
       text-align: right;
-      justify-self: end;
+      padding-right: 52px;
+      padding-left: clamp(16px, 4vw, 52px);
     }
-
-    /* Even: card right, left-aligned text */
-    .steps__item:nth-child(even) .steps__card {
-      grid-column: 3;
-      grid-row: 1;
-      padding-left: 52px;
+    .cut__stage--right {
+      right: 0;
       text-align: left;
-      justify-self: start;
+      padding-left: 52px;
+      padding-right: clamp(16px, 4vw, 52px);
     }
-
-    .steps__num {
+    .cut__stage-num {
       display: block;
       font-family: 'Cinzel', serif;
       font-size: 10px;
-      letter-spacing: 0.32em;
-      color: var(--gold);
-      margin-bottom: 7px;
+      letter-spacing: 0.3em;
+      color: rgba(10,5,0,0.4);
+      margin-bottom: 5px;
     }
-
-    .steps__title {
+    .cut__stage-title {
       font-family: 'Cinzel', serif;
       font-weight: 400;
-      font-size: clamp(14px, 1.4vw, 18px);
-      color: var(--white);
+      font-size: clamp(12px, 1.2vw, 16px);
+      color: var(--dark);
       letter-spacing: 0.14em;
-      margin-bottom: 9px;
+      margin-bottom: 6px;
     }
-
-    .steps__desc {
+    .cut__stage-desc {
       font-family: 'Raleway', sans-serif;
       font-weight: 300;
-      font-size: clamp(12px, 1vw, 14px);
-      color: var(--dim);
-      line-height: 1.75;
+      font-size: clamp(11px, 0.85vw, 13px);
+      color: rgba(10,5,0,0.58);
+      line-height: 1.72;
     }
 
-    /* ── Mobile ── */
-    @media (max-width: 700px) {
-      .steps__list::before { left: 14px; }
-
-      .steps__item {
-        grid-template-columns: 28px 1fr;
-        grid-template-rows: auto;
-      }
-      .steps__dot {
-        grid-column: 1;
-        grid-row: 1;
-        align-self: start;
-        margin-top: 5px;
-      }
-      .steps__item:nth-child(odd) .steps__card,
-      .steps__item:nth-child(even) .steps__card {
-        grid-column: 2;
-        grid-row: 1;
-        padding-left: 20px;
-        padding-right: 0;
-        text-align: left;
-        justify-self: start;
-        max-width: 100%;
-      }
+    @media (max-width: 640px) {
+      .cut__stage { width: calc(50% - 36px); }
+      .cut__stage--left  { padding-right: 28px; padding-left: 12px; }
+      .cut__stage--right { padding-left: 28px;  padding-right: 12px; }
+      .cut__stage-desc   { display: none; }
     }
   </style>
 </head>
@@ -748,95 +654,62 @@
 </section>
 
 <!-- ══════════════════════════════════════
-     CUT SECTION — ножницы
+     CUT SECTION — ножницы + этапы работы
 ══════════════════════════════════════ -->
 <section class="cut-section" id="cutSection">
+
+  <div class="cut__stage cut__stage--left"  style="top:6.25%">
+    <span class="cut__stage-num">01</span>
+    <h3 class="cut__stage-title">Заявка</h3>
+    <p class="cut__stage-desc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--right" style="top:18.75%">
+    <span class="cut__stage-num">02</span>
+    <h3 class="cut__stage-title">Обсуждение</h3>
+    <p class="cut__stage-desc">Обсуждаем пожелания: ткань, фасон, силуэт и все детали будущего изделия.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--left"  style="top:31.25%">
+    <span class="cut__stage-num">03</span>
+    <h3 class="cut__stage-title">Встреча и материал</h3>
+    <p class="cut__stage-desc">Встречаемся в ателье, выбираем ткани и фурнитуру, утверждаем эскиз.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--right" style="top:43.75%">
+    <span class="cut__stage-num">04</span>
+    <h3 class="cut__stage-title">Снятие мерок</h3>
+    <p class="cut__stage-desc">Тщательно снимаем все мерки. Каждый сантиметр важен для идеального кроя.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--left"  style="top:56.25%">
+    <span class="cut__stage-num">05</span>
+    <h3 class="cut__stage-title">Пошив</h3>
+    <p class="cut__stage-desc">Мастер приступает к работе. Срок — от двух до шести недель в зависимости от сложности.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--right" style="top:68.75%">
+    <span class="cut__stage-num">06</span>
+    <h3 class="cut__stage-title">Примерка</h3>
+    <p class="cut__stage-desc">Примеряете изделие и вместе отмечаем всё, что нужно скорректировать под фигуру.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--left"  style="top:81.25%">
+    <span class="cut__stage-num">07</span>
+    <h3 class="cut__stage-title">Доработка</h3>
+    <p class="cut__stage-desc">Вносим все правки, добиваемся безупречной посадки и безукоризненного вида.</p>
+  </div>
+
+  <div class="cut__stage cut__stage--right" style="top:93.75%">
+    <span class="cut__stage-num">08</span>
+    <h3 class="cut__stage-title">Ваше платье готово</h3>
+    <p class="cut__stage-desc">Упаковываем и вручаем. Дорого. Долго. Шикарно.</p>
+  </div>
+
   <svg class="cut__svg" aria-hidden="true">
     <path id="cutPathLine" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="1"/>
   </svg>
   <img class="cut__scissors" src="423423.png" alt="" id="cutScissors">
-</section>
-
-<!-- ── ЭТАПЫ РАБОТЫ ── -->
-<section class="steps" id="steps">
-  <div class="steps__inner">
-    <h2 class="steps__heading">Этапы <em>работы</em></h2>
-    <div class="steps__list">
-
-      <div class="steps__item">
-        <div class="steps__card">
-          <span class="steps__num">01</span>
-          <h3 class="steps__title">Заявка</h3>
-          <p class="steps__desc">Оставляете заявку через сайт или мессенджер — мы свяжемся с вами в течение дня и ответим на первые вопросы.</p>
-        </div>
-        <div class="steps__dot"></div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__dot"></div>
-        <div class="steps__card">
-          <span class="steps__num">02</span>
-          <h3 class="steps__title">Обсуждение</h3>
-          <p class="steps__desc">Обсуждаем ваши пожелания: выбираем ткань, фасон, силуэт и все детали будущего изделия.</p>
-        </div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__card">
-          <span class="steps__num">03</span>
-          <h3 class="steps__title">Встреча и материал</h3>
-          <p class="steps__desc">Встречаемся в ателье, вместе смотрим образцы тканей и фурнитуры, утверждаем эскиз и окончательный облик.</p>
-        </div>
-        <div class="steps__dot"></div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__dot"></div>
-        <div class="steps__card">
-          <span class="steps__num">04</span>
-          <h3 class="steps__title">Снятие мерок</h3>
-          <p class="steps__desc">Тщательно снимаем все необходимые мерки. Каждый сантиметр важен для идеально выверенного кроя.</p>
-        </div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__card">
-          <span class="steps__num">05</span>
-          <h3 class="steps__title">Пошив</h3>
-          <p class="steps__desc">Мастер приступает к работе. В зависимости от сложности изделия этот этап занимает от двух до шести недель.</p>
-        </div>
-        <div class="steps__dot"></div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__dot"></div>
-        <div class="steps__card">
-          <span class="steps__num">06</span>
-          <h3 class="steps__title">Примерка</h3>
-          <p class="steps__desc">Примеряете готовое изделие. Вместе отмечаем всё, что нужно скорректировать под вашу фигуру.</p>
-        </div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__card">
-          <span class="steps__num">07</span>
-          <h3 class="steps__title">Доработка</h3>
-          <p class="steps__desc">Вносим все необходимые правки, добиваемся безупречной посадки и безукоризненного вида в каждой детали.</p>
-        </div>
-        <div class="steps__dot"></div>
-      </div>
-
-      <div class="steps__item">
-        <div class="steps__dot"></div>
-        <div class="steps__card">
-          <span class="steps__num">08</span>
-          <h3 class="steps__title">Ваше платье готово</h3>
-          <p class="steps__desc">Упаковываем и вручаем изделие. Дорого. Долго. Шикарно — именно таким и должен быть результат.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
 </section>
 
 <script>
@@ -892,23 +765,6 @@
       });
     }, { threshold: 0.18 });
     philItems.forEach(el => io.observe(el));
-  }
-
-  /* ── Steps: появление при скролле ── */
-  const stepItems = document.querySelectorAll('.steps__item');
-  if (stepItems.length) {
-    const ioSteps = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          ioSteps.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.2 });
-    stepItems.forEach((el, i) => {
-      el.style.transitionDelay = (i * 0.07) + 's';
-      ioSteps.observe(el);
-    });
   }
 
   /* ── Cut section ── */
