@@ -603,16 +603,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--dark);
+      background: #050200;
       overflow: hidden;
       border-top: 1px solid rgba(201,169,110,0.18);
     }
 
     .contact__bg {
-      position: absolute;
-      inset: 0;
-      background: url('end.png') center 100% / cover no-repeat;
-      will-change: background-position;
+      display: none;
     }
 
     .contact__overlay {
@@ -1359,20 +1356,6 @@
   window.addEventListener('resize', buildCutPath);
   window.addEventListener('load',   buildCutPath);
 
-  /* ── Contact parallax ── */
-  const contactBg = document.getElementById('contactBg');
-  const contactEl = document.querySelector('.contact');
-
-  function updateContact() {
-    const rect = contactEl.getBoundingClientRect();
-    const vH   = window.innerHeight;
-    /* progress=0: секция входит снизу (rect.top=vH)
-       progress=1: верх секции у верха экрана (rect.top=0) —
-       это случается когда долистали до самого низа страницы */
-    const progress = Math.max(0, Math.min(1, (vH - rect.top) / rect.height));
-    /* backgroundPositionY: 100%=низ фото → 0%=верх фото */
-    contactBg.style.backgroundPositionY = `${Math.round((1 - progress) * 100)}%`;
-  }
 
   /* ── Sticky CTA ── */
   const stickyCta = document.getElementById('stickyCta');
@@ -1430,7 +1413,6 @@
         stickyCta.classList.remove('visible');
       }
       updateCut();
-      updateContact();
       ticking = false;
     });
   }, { passive: true });
