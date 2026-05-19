@@ -516,6 +516,38 @@
       line-height: 1.75;
     }
 
+
+    /* ── Стрелки примерка↔доработка ── */
+    .cut__loop-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .cut__loop-svg .arc {
+      fill: none;
+      stroke: rgba(10,5,0,0.32);
+      stroke-width: 1.1;
+      stroke-linecap: round;
+    }
+    .cut__loop-svg .arc-head {
+      fill: none;
+      stroke: rgba(10,5,0,0.55);
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .cut__loop-svg .loop-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 13px;
+      fill: rgba(10,5,0,0.48);
+    }
+    @media (max-width: 640px) { .cut__loop-svg { display: none; } }
+
     /* Ножницы — абсолютно поверх списка */
     .cut__svg {
       position: absolute;
@@ -549,10 +581,12 @@
       }
       .cut__item:nth-child(odd) .cut__card {
         padding-right: 10px;
+        padding-left: 0;
         max-width: none;
       }
       .cut__item:nth-child(even) .cut__card {
         padding-left: 10px;
+        padding-right: 0;
         max-width: none;
       }
       .cut__num    { font-size: 11px; letter-spacing: 0.22em; margin-bottom: 4px; }
@@ -1153,6 +1187,17 @@
       </svg>
       <img class="cut__scissors" src="scissors.png" alt="" id="cutScissors">
 
+      <svg class="cut__loop-svg" id="cutLoopSvg" aria-hidden="true">
+        <path id="loopArcR" class="arc"/>
+        <path id="loopArcL" class="arc"/>
+        <path id="loopHeadR" class="arc-head"/>
+        <path id="loopHeadL" class="arc-head"/>
+        <text id="loopText" class="loop-text">
+          <tspan id="loopTextL1" x="0" dy="0"></tspan>
+          <tspan id="loopTextL2" x="0" dy="17"></tspan>
+        </text>
+      </svg>
+
     </div>
   </div>
 </section>
@@ -1352,9 +1397,71 @@
       `translate3d(calc(-50% + ${x}px), ${yTop}px, 0) rotate(${finalAngle}deg)`;
   }
 
+  /* ── Стрелки примерка↔доработка ── */
+  const cutLoopSvg  = document.getElementById('cutLoopSvg');
+  const loopArcR    = document.getElementById('loopArcR');
+  const loopArcL    = document.getElementById('loopArcL');
+  const loopHeadR   = document.getElementById('loopHeadR');
+  const loopHeadL   = document.getElementById('loopHeadL');
+  const loopText    = document.getElementById('loopText');
+  const loopTextL1  = document.getElementById('loopTextL1');
+  const loopTextL2  = document.getElementById('loopTextL2');
+
+  /* Рисует наконечник стрелки в точке (ex,ey), направление — угол angle (радиан),
+     size — длина каждой линии наконечника, open — угол раскрытия */
+  function arrowHead(ex, ey, angle, size, open) {
+    const a1 = angle + Math.PI - open;
+    const a2 = angle + Math.PI + open;
+    const x1 = ex + Math.cos(a1) * size;
+    const y1 = ey + Math.sin(a1) * size;
+    const x2 = ex + Math.cos(a2) * size;
+    const y2 = ey + Math.sin(a2) * size;
+    return `M${x1.toFixed(2)},${y1.toFixed(2)} L${ex.toFixed(2)},${ey.toFixed(2)} L${x2.toFixed(2)},${y2.toFixed(2)}`;
+  }
+
+  function buildLoopArrows() {
+    if (!cutLoopSvg || cutItems.length < 7) return;
+    const sW  = cutBody.offsetWidth;
+    const i6  = cutItems[5];
+    const i7  = cutItems[6];
+    const cx  = sW / 2;
+    const y6  = i6.offsetTop + i6.offsetHeight / 2;
+    const y7  = i7.offsetTop + i7.offsetHeight / 2;
+    const ext = Math.min(82, sW * 0.07);
+
+    // Arrow → : up-right to Примерка
+    const rEx  = cx + ext - 20,  rEy  = y6;
+    const rCp2x = cx + 8,        rCp2y = y6 - 6;
+    const rAngle = Math.atan2(rEy - rCp2y, rEx - rCp2x);
+    loopArcR.setAttribute('d',
+      `M${cx-122},${(y6+y7)/2+8} C${cx-108},${y6+12} ${rCp2x},${rCp2y} ${rEx},${rEy}`
+    );
+    loopHeadR.setAttribute('d', arrowHead(rEx, rEy, rAngle, 10, 0.38));
+
+    // Arrow ← : down-left to Доработка
+    const lEx  = cx - ext + 30,  lEy  = y7 + 4;
+    const lCp2x = cx - 24 + 30,  lCp2y = y7 + 6;
+    const lAngle = Math.atan2(lEy - lCp2y, lEx - lCp2x);
+    loopArcL.setAttribute('d',
+      `M${cx+ext*0.78+100},${y6+26+30} C${cx+14+100},${y7-10+30} ${lCp2x},${lCp2y} ${lEx},${lEy}`
+    );
+    loopHeadL.setAttribute('d', arrowHead(lEx, lEy, lAngle, 10, 0.38));
+
+    // Подпись правее нижней стрелки
+    const tx = cx + ext * 0.78 + 100 + 14;
+    const ty = y6 + 26 + 30 - 6 + 50;
+    loopText.setAttribute('x', tx);
+    loopText.setAttribute('y', ty);
+    loopTextL1.setAttribute('x', tx);
+    loopTextL1.textContent = 'Дорабатываем пока';
+    loopTextL2.setAttribute('x', tx);
+    loopTextL2.textContent = 'идеально не сядет на вас';
+  }
+
   buildCutPath();
-  window.addEventListener('resize', buildCutPath);
-  window.addEventListener('load',   buildCutPath);
+  buildLoopArrows();
+  window.addEventListener('resize', () => { buildCutPath(); buildLoopArrows(); });
+  window.addEventListener('load',   () => { buildCutPath(); buildLoopArrows(); });
 
 
   /* ── Sticky CTA ── */
